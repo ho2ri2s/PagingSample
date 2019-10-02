@@ -6,7 +6,9 @@ import androidx.paging.PageKeyedDataSource
 import com.example.pagingsample.api.GitHubApi
 import com.example.pagingsample.data.GithubRepo
 import com.example.pagingsample.data.NetworkState
+import retrofit2.HttpException
 import java.io.IOException
+import java.net.HttpURLConnection
 
 class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<Int, GithubRepo>() {
 
@@ -56,8 +58,16 @@ class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<
                 callback(next, it)
                 state = NetworkState.SUCCESS
             }
-        } catch (e: IOException) {
-            e.printStackTrace()
+        } catch (t: Throwable) {
+            when(t){
+                is IOException -> {t.printStackTrace()}
+                is HttpException -> {
+                    when(t.code()){
+                        HttpURLConnection.HTTP_BAD_REQUEST -> {t.printStackTrace()}
+                        HttpURLConnection.HTTP_INTERNAL_ERROR -> {t.printStackTrace()}
+                    }
+                }
+            }
         }
 
         networkState.postValue(state)

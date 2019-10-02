@@ -43,7 +43,7 @@ class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<
         var state = NetworkState.FAILED
 
         try {
-            val response = api.getGithubRepository("google", page, perPage).execute()
+            val response = api.getGithubRepository("yanzm", page, perPage).execute()
             response.body()?.let {
                 var next: Int? = null
                 //Headerにnextがあれば次ページを加算

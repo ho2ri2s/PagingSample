@@ -3,7 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- TODO dataBinding -->
+    <data>
+
+        <variable
+            name="repo"
+            type="com.example.pagingsample.data.GithubRepo" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="423dp"
@@ -15,6 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/name_margin_start"
+            android:text="@{repo.name}"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -27,6 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/url_margin_start"
+            android:text="@{repo.url}"
             android:textColor="@color/white"
             app:layout_constraintEnd_toStartOf="@+id/text_star"
             app:layout_constraintStart_toStartOf="@+id/text_name"
@@ -46,9 +53,11 @@
             android:id="@+id/text_star"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{repo.star}"
             android:textColor="@color/white"
             app:layout_constraintStart_toStartOf="@+id/image_star"
             app:layout_constraintTop_toBottomOf="@+id/image_star"
+            app:layout_constraintEnd_toEndOf="@+id/image_star"
             tools:text="234" />
 
 

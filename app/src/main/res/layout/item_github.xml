@@ -30,9 +30,8 @@
 
         <TextView
             android:id="@+id/text_url"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/url_margin_start"
             android:text="@{repo.url}"
             android:textColor="@color/white"
             app:layout_constraintEnd_toStartOf="@+id/text_star"

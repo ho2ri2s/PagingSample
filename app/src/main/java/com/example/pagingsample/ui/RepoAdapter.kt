@@ -14,7 +14,7 @@ class RepoAdapter : PagedListAdapter<GithubRepo, RepoAdapter.RepoViewHolder>(Dif
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepoViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        binding = DataBindingUtil.inflate(inflater, R.layout.item_github, parent, false)
+        binding = ItemGithubBinding.inflate(inflater, parent, false)
         return RepoViewHolder(binding)
     }
 

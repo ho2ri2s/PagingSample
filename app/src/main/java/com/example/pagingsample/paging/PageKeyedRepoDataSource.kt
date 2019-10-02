@@ -46,17 +46,19 @@ class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<
 
         try {
             val response = api.getGithubRepository("yanzm", page, perPage).execute()
-            response.body()?.let {
-                var next: Int? = null
-                //Headerにnextがあれば次ページを加算
-                response.headers().get("Link")?.let {
-                    val regex = Regex("rel=\"next\"")
-                    if (regex.containsMatchIn(it)) {
-                        next = page + 1
+            if(response.isSuccessful) {
+                response.body()?.let {
+                    var next: Int? = null
+                    //Headerにnextがあれば次ページを加算
+                    response.headers().get("Link")?.let {
+                        val regex = Regex("rel=\"next\"")
+                        if (regex.containsMatchIn(it)) {
+                            next = page + 1
+                        }
                     }
+                    callback(next, it)
+                    state = NetworkState.SUCCESS
                 }
-                callback(next, it)
-                state = NetworkState.SUCCESS
             }
         } catch (t: Throwable) {
             when(t){
@@ -71,6 +73,5 @@ class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<
         }
 
         networkState.postValue(state)
-
     }
 }

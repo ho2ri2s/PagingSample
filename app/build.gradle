@@ -1,8 +1,7 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
@@ -21,11 +20,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    dataBinding{
+    dataBinding {
         enabled = true
     }
 }
 
+kapt {
+    correctErrorTypes = true
+}
 
 dependencies {
     def paging_version = "2.0.0"
@@ -33,6 +35,7 @@ dependencies {
     def moshi_version = '1.8.0'
     def okhttp_version = '4.0.0'
     def lifecycle_version = "2.1.0"
+    def epoxy_version = "3.7.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -57,4 +60,11 @@ dependencies {
     // Okhttp
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+
+    //Epoxy
+    implementation "com.airbnb.android:epoxy-paging:$epoxy_version"
+    implementation "com.airbnb.android:epoxy:$epoxy_version"
+    implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"
+    kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
+
 }

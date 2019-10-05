@@ -6,11 +6,15 @@ import androidx.paging.PageKeyedDataSource
 import com.example.pagingsample.api.GitHubApi
 import com.example.pagingsample.data.GithubRepo
 import com.example.pagingsample.data.NetworkState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.HttpURLConnection
 
-class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<Int, GithubRepo>() {
+class PageKeyedRepoDataSource(private val api: GitHubApi, private val scope: CoroutineScope) :
+    PageKeyedDataSource<Int, GithubRepo>() {
 
     val networkState = MutableLiveData<NetworkState>()
 
@@ -19,15 +23,19 @@ class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<
         callback: LoadInitialCallback<Int, GithubRepo>
     ) {
         // 初期化するところ
-        callAPI(1, params.requestedLoadSize) { next, repos ->
-            callback.onResult(repos, null, next)
+        scope.launch {
+            callAPI(1, params.requestedLoadSize) { next, repos ->
+                callback.onResult(repos, null, next)
+            }
         }
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, GithubRepo>) {
         // ロード後にする処理
-        callAPI(params.key, params.requestedLoadSize) { next, repos ->
-            callback.onResult(repos, next)
+        scope.launch {
+            callAPI(params.key, params.requestedLoadSize) { next, repos ->
+                callback.onResult(repos, next)
+            }
         }
     }
 
@@ -35,7 +43,7 @@ class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<
         // ロード前にする処理
     }
 
-    private fun callAPI(
+    private suspend fun callAPI(
         page: Int, perPage: Int, callback: (next: Int?, repos: List<GithubRepo>) -> Unit
     ) {
         Log.d("MYTAG", "page: $page, perPage: $perPage")
@@ -44,10 +52,8 @@ class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<
 
         var state = NetworkState.FAILED
         try {
-            val response = api.getGithubRepository("yanzm", page, perPage).execute()
-            Log.d("MYTAG", "$response")
-            Log.d("MYTAG", "${response.isSuccessful}")
-            if(response.isSuccessful) {
+            val response = api.getGithubRepository("yanzm", page, perPage)
+            if (response.isSuccessful) {
                 response.body()?.let {
                     var next: Int? = null
                     //Headerにnextがあれば次ページを加算
@@ -62,12 +68,18 @@ class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<
                 }
             }
         } catch (t: Throwable) {
-            when(t){
-                is IOException -> {t.printStackTrace()}
+            when (t) {
+                is IOException -> {
+                    t.printStackTrace()
+                }
                 is HttpException -> {
-                    when(t.code()){
-                        HttpURLConnection.HTTP_BAD_REQUEST -> {t.printStackTrace()}
-                        HttpURLConnection.HTTP_INTERNAL_ERROR -> {t.printStackTrace()}
+                    when (t.code()) {
+                        HttpURLConnection.HTTP_BAD_REQUEST -> {
+                            t.printStackTrace()
+                        }
+                        HttpURLConnection.HTTP_INTERNAL_ERROR -> {
+                            t.printStackTrace()
+                        }
                     }
                 }
                 else -> t.printStackTrace()
@@ -75,5 +87,10 @@ class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<
         }
 
         networkState.postValue(state)
+    }
+
+    override fun invalidate() {
+        super.invalidate()
+        scope.cancel()
     }
 }

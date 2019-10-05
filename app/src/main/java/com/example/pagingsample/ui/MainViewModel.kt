@@ -2,6 +2,7 @@ package com.example.pagingsample.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.example.pagingsample.api.GitHubApi
@@ -47,13 +48,16 @@ class MainViewModel : ViewModel() {
 
         val api = retrofit.create(GitHubApi::class.java)
 
-        val factory = RepoDataSourceFactory(api)
+        val factory = RepoDataSourceFactory(api, viewModelScope)
         val config = PagedList.Config.Builder()
             .setInitialLoadSizeHint(PAGE_SIZE)
             .setPageSize(PAGE_SIZE)
             .build()
 
+
+
         repositories = LivePagedListBuilder(factory, config).build()
         networkState = factory.source.networkState
     }
+
 }

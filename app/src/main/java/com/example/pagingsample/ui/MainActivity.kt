@@ -19,10 +19,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        val controller = RepoListController()
 
-        val adapter = RepoAdapter()
         recycler_view.run {
-            this.adapter = adapter
+            this.adapter = controller.adapter
             this.layoutManager = LinearLayoutManager(this@MainActivity)
             this.addItemDecoration(
                 DividerItemDecoration(
@@ -30,9 +30,10 @@ class MainActivity : AppCompatActivity() {
                     DividerItemDecoration.VERTICAL
                 )
             )
+            controller.requestModelBuild()
         }
         viewModel.repositories.observe(this, Observer {
-            adapter.submitList(it)
+            controller.submitList(it)
         })
         viewModel.networkState.observe(this, Observer {
             Log.d("MYTAG", "$it")

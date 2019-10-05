@@ -43,9 +43,10 @@ class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<
         networkState.postValue(NetworkState.RUNNING)
 
         var state = NetworkState.FAILED
-
         try {
             val response = api.getGithubRepository("yanzm", page, perPage).execute()
+            Log.d("MYTAG", "$response")
+            Log.d("MYTAG", "${response.isSuccessful}")
             if(response.isSuccessful) {
                 response.body()?.let {
                     var next: Int? = null
@@ -69,6 +70,7 @@ class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<
                         HttpURLConnection.HTTP_INTERNAL_ERROR -> {t.printStackTrace()}
                     }
                 }
+                else -> t.printStackTrace()
             }
         }
 

@@ -1,8 +1,6 @@
 package com.example.pagingsample.ui.model
 
-import android.view.LayoutInflater
 import android.view.View
-import androidx.annotation.CallSuper
 import androidx.databinding.DataBindingUtil
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyHolder

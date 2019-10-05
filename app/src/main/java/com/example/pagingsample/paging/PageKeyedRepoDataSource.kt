@@ -45,6 +45,8 @@ class PageKeyedRepoDataSource(private val api: GitHubApi) : PageKeyedDataSource<
         var state = NetworkState.FAILED
         try {
             val response = api.getGithubRepository("yanzm", page, perPage).execute()
+            Log.d("MYTAG", "$response")
+            Log.d("MYTAG", "${response.isSuccessful}")
             if(response.isSuccessful) {
                 response.body()?.let {
                     var next: Int? = null
